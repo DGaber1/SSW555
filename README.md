@@ -20,7 +20,7 @@ Exchange4Students is a browser-based student marketplace for buying and selling 
 
 ## How To Run
 
-1. Open [index.html] in a browser.
+1. Open `index.html` in a browser.
 2. Use the filters to browse listings or submit the form to create a new one.
 
 ## Notes
