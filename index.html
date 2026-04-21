@@ -19,6 +19,17 @@
             <div id="weather-info"></div>
 
             <div id="hourly-forecast"></div>
+            <div class="controls">
+    <button onclick="toggleUnits()">°F / °C</button>
+    <button onclick="toggleDarkMode()">🌙</button>
+</div>
+
+<h3>Favorites</h3>
+<ul id="favorites"></ul>
+<button onclick="saveFavorite()">⭐ Save City</button>
+
+<h3 id="forecast-heading">5-Day Forecast</h3>
+<div id="daily-forecast"></div>
         </div>
         <script src="./script.js"></script>
     </body>
