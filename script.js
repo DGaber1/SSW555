@@ -8,6 +8,11 @@ function toggleTimeFormat(){
     is24Hour = !is24Hour;
     getWeather(); // refresh display
 }
+function removeFavorite(city){
+    favorites = favorites.filter(fav => fav !== city);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    renderFavorites();
+}
 function formatHour(timestamp){
     const date = new Date(timestamp * 1000);
     let hours = date.getHours();
@@ -161,21 +166,29 @@ function saveFavorite(){
 
 function renderFavorites(){
     const list = document.getElementById("favorites");
-    if(!list) return;
-
     list.innerHTML = "";
 
     favorites.forEach(city => {
         const li = document.createElement("li");
-        li.textContent = city;
 
-        li.onclick = () => {
-            document.getElementById("city").value = city;
-            getWeather();
-        };
+        li.innerHTML = `
+            <span class="city-name" onclick="selectCity('${city}')">${city}</span>
+            <span class="remove-btn" onclick="removeFavorite('${city}', event)">❌</span>
+        `;
 
         list.appendChild(li);
     });
+}
+function selectCity(city){
+    document.getElementById("city").value = city;
+    getWeather();
+}
+
+function removeFavorite(city, event){
+    event.stopPropagation();  // prevents clicking the whole row
+    favorites = favorites.filter(fav => fav !== city);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    renderFavorites();
 }
 window.onload = () => {
     const input = document.getElementById("city");
