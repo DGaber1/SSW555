@@ -1,9 +1,25 @@
 // ===== GLOBAL STATE =====
 const apiKey = "0defc0fc05c4547370b38caa132c44a3";
-
+let is24Hour = true;
+document.getElementById("weather-container").classList.add("fade-in");
 let isFahrenheit = true;
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+function toggleTimeFormat(){
+    is24Hour = !is24Hour;
+    getWeather(); // refresh display
+}
+function formatHour(timestamp){
+    const date = new Date(timestamp * 1000);
+    let hours = date.getHours();
 
+    if(is24Hour){
+        return `${hours}:00`;
+    } else {
+        const suffix = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12;
+        return `${hours}:00 ${suffix}`;
+    }
+}
 // ===== TEMPERATURE CONVERSION =====
 function convertTemp(kelvin){
     return isFahrenheit
@@ -53,6 +69,22 @@ async function getWeather(){
         alert("Failed to fetch weather data.");
     }
 }
+function updateBackground(weatherMain){
+    const body = document.body;
+
+    if(weatherMain.includes("cloud")){
+        body.style.background = "linear-gradient(135deg, #757f9a, #d7dde8)";
+    } 
+    else if(weatherMain.includes("rain")){
+        body.style.background = "linear-gradient(135deg, #4b6cb7, #182848)";
+    } 
+    else if(weatherMain.includes("clear")){
+        body.style.background = "linear-gradient(135deg, #f7971e, #ffd200)";
+    } 
+    else {
+        body.style.background = "linear-gradient(135deg, #5fb3c8, #7bc6d6)";
+    }
+}
 
 // ===== CURRENT WEATHER =====
 function displayWeather(data){
@@ -63,7 +95,7 @@ function displayWeather(data){
     // Clear old data
     tempDiv.innerHTML = "";
     infoDiv.innerHTML = "";
-
+updateBackground(data.weather[0].main.toLowerCase());
     const temperature = convertTemp(data.main.temp);
     const description = data.weather[0].description;
     const cityName = data.name;
@@ -82,11 +114,11 @@ function displayHourlyForecast(hourlyData){
     container.innerHTML = "";
 
     hourlyData.slice(0,8).forEach(item => {
-        const hour = new Date(item.dt * 1000).getHours();
+        const hour = formatHour(item.dt);
 
         container.innerHTML += `
             <div class="hourly-item">
-                <span>${hour}:00</span>
+                <span>${hour}</span>
                 <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
                 <span>${convertTemp(item.main.temp)}</span>
             </div>
@@ -145,6 +177,11 @@ function renderFavorites(){
         list.appendChild(li);
     });
 }
+window.onload = () => {
+    const input = document.getElementById("city");
+    input.value = "Hoboken";
+    getWeather();
+};
 
 // ===== INIT =====
 renderFavorites();
